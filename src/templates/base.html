@@ -47,7 +47,13 @@ fjs.parentNode.insertBefore(js, fjs);
 <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.5.1/marked.min.js"></script>
 <script>
     $(document).ready(function() {
-        $('.content-markdown').html(marked($('.content-markdown').text()));
+        console.log(typeof($('.content-markdown')));
+        $('.content-markdown').each(function() {
+            $(this).html(marked($(this).text()));
+            $(this).find('img').each(function() {
+                $(this).addClass('img-responsive');
+            });
+        });
     });
 </script>
 </body>

@@ -1,3 +1,6 @@
+from __future__ import unicode_literals
+import unicodedata
+
 try:
     from urllib import quote_plus #python 2
 except:
@@ -55,7 +58,7 @@ class PostDetailView(DetailView):
 	def get_context_data(self, *args, **kwargs):
 		context = super(PostDetailView, self).get_context_data(*args, **kwargs)
 		instance = context['object']
-		context['share_string'] = quote_plus(instance.content)
+		context['share_string'] = quote_plus(instance.content.encode('utf8'))
 		return context
 	
 # in urls.py --> PostDetailView.as_view() instead of post_detail
