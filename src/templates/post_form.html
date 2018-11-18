@@ -6,12 +6,41 @@
 
 
 {% block content %}
-<div class='col-sm-6 col-sm-offset-3'>
-<h1>Form</h1>
+<div class="col-sm-6">
+    <h1>Preview</h1>
+    <div class="content-preview">
+        <img class="img-responsive">
+        <h1></h1>
+        <p></p>
+    </div>
+</div>
+<div class='col-sm-6'>
+    <h1>Form</h1>
 
-<form method='POST' action='' enctype='multipart/form-data'>{% csrf_token %}
-{{ form.as_p }}
-<input type='submit' class='btn btn-default' value='Create Post' />
-</form>
+    <form method='POST' action='' enctype='multipart/form-data'>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type='submit' class='btn btn-default' value='Create Post' />
+    </form>
 </div>
 {% endblock content %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    $('#id_title').on('keypress', function() {
+        $('.content-preview h1').text($(this).val());
+    });
+    $('#id_image').on('change', function() {
+        console.log($(this).val());
+        $('.content-preview img').attr("src", $(this).val());
+    });
+    $('#id_content').on('keypress', function() {
+        $('.content-preview p').html(marked($(this).val()));
+    });
+});
+</script>
+
+$(this).html(marked($(this).text()));
+
+{% endblock extra_js %}
