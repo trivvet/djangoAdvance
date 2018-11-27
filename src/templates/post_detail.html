@@ -52,12 +52,30 @@ Linkedin
     
     <div>
         <p class="lead">Comments:</p>
-        {% for comment in comments %}
-        <div>
-            <span class="text-info">{{ comment.user }} {{ comment.timestamp|timesince }} ago:</span>
-            {{ comment.content }}
-            <hr />
-        </div>
+        <form class="form-inline" action="" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form }}
+            </div>
+            <button class="btn btn-default" type="submit">Comment</button>
+        </form>
+        <hr/>
+        {% for comment in object.comments %}
+        <blockquote>
+            <p>{{ comment.content }}</p>
+            <footer>{{ comment.user }} <cite title="Source Title">{{ comment.timestamp|timesince }} ago</cite></footer>
+
+            {% if comment.children %}
+                {% for item in comment.children %}  
+                <hr/>
+                <blockquote>
+                    <p>{{ item.content }}</p>
+                    <footer>{{ item.user }}<cite title="Source Title">{{ item.timestamp|timesince }} ago:</cite></footer>
+                </blockquote>
+                {% endfor %}
+            {% endif %}
+        </blockquote>
+        <hr/>
         {% endfor %}
     </div>
 

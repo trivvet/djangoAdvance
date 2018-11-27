@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.signals import pre_save
@@ -11,6 +12,8 @@ from django.utils.text import slugify
 # MVC MODEL VIEW CONTROLLER
 
 from markdown_deux import markdown
+
+from comments.models import Comment
 
 #Post.objects.all().published()
 #Post.objects.create(user=user, title="Some time")
@@ -83,11 +86,19 @@ class Post(models.Model):
     class Meta:
         ordering = ["-timestamp", "-updated"]
        
-#    @property
-#    def title(self):
-#        return "Title"
+    @property
+    def comments(self):
+        comments = Comment.objects.filter_by_instance(self)
+        for comment in comments:
+            children = Comment.objects.filter_by_instance(comment)
+            if children:
+                comment.children = children
+        return comments
 
-
+    @property
+    def get_content_type(self):
+        content_type = ContentType.objects.get_for_model(self.__class__)
+        return content_type
 
 def create_slug(instance, new_slug=None):
     slug = slugify(instance.title)

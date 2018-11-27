@@ -12,16 +12,20 @@ except:
     pass
 
 from django.contrib import messages
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.contrib.contenttypes.models import ContentType
+from django.core.paginator import (
+	Paginator, 
+	EmptyPage, 
+	PageNotAnInteger
+	)
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 from django.utils import timezone
 
 from .forms import PostForm
 from .models import Post
-from comments.models import Comment
+from comments.forms import CommentForm
 
 def post_create(request):
 	if not request.user.is_staff or not request.user.is_superuser:
@@ -58,16 +62,33 @@ class PostDetailView(DetailView):
 		return instance
 	
 	def get_context_data(self, *args, **kwargs):
-		context = super(PostDetailView, self).get_context_data(*args, **kwargs)
+		context = super(PostDetailView, self).get_context_data(
+			*args, **kwargs
+			)
 		instance = context['object']
-		context['share_string'] = quote_plus(instance.content.encode('utf8'))
-		content_type = ContentType.objects.get_for_model(Post)
-		obj_id = instance.id
-		comments = Comment.objects.filter(
-	    	content_type=content_type, 
-	    	object_id=obj_id)
-		context['comments'] = comments
+		context['share_string'] = quote_plus(
+			instance.content.encode('utf8')
+			)
+		initial_data = {
+		    "content_type": instance.get_content_type,
+		    "object_id": instance.id
+		}
+		form = CommentForm(
+			self.request.POST or None, 
+			initial=initial_data
+			)
+		context['form'] = form
 		return context
+
+	def post(self, request, *args, **kwargs):
+		instance = self.get_object()
+		form = CommentForm(self.request.POST or None)
+		if form.is_valid():
+			print form.cleaned_data
+		else:
+			print 'form is not valid'
+		return HttpResponseRedirect(
+			reverse('posts:detail', kwargs={'slug': instance.slug}))
 	
 # in urls.py --> PostDetailView.as_view() instead of post_detail
 
