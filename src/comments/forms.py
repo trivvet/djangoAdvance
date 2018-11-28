@@ -1,7 +1,15 @@
 from django import forms
+
+from crispy_forms.helper import FormHelper
+
 from .models import Comment
 
 class CommentForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        super(CommentForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+
     content_type = forms.CharField(widget=forms.HiddenInput)
     object_id = forms.IntegerField(widget=forms.HiddenInput)
     # parent_id = forms.IntegerField(

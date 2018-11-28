@@ -12,6 +12,7 @@ except:
     pass
 
 from django.contrib import messages
+from django.contrib.contenttypes.models import ContentType
 from django.core.paginator import (
 	Paginator, 
 	EmptyPage, 
@@ -26,6 +27,7 @@ from django.utils import timezone
 from .forms import PostForm
 from .models import Post
 from comments.forms import CommentForm
+from comments.models import Comment
 
 def post_create(request):
 	if not request.user.is_staff or not request.user.is_superuser:
@@ -84,11 +86,19 @@ class PostDetailView(DetailView):
 		instance = self.get_object()
 		form = CommentForm(self.request.POST or None)
 		if form.is_valid():
-			print form.cleaned_data
-		else:
-			print 'form is not valid'
+			data = {}
+			c_type = form.cleaned_data.get("content_type")
+			parent_id = request.POST.get('parent_id')
+			print parent_id
+			data['content_type'] = ContentType.objects.get(model=c_type)
+			data['object_id'] = form.cleaned_data.get("object_id")
+			data['content'] = form.cleaned_data.get("content")
+			data['user'] = request.user
+			data['parent'] = Comment.objects.get(pk=parent_id)
+			new_comment = Comment(**data)
+			new_comment.save()
 		return HttpResponseRedirect(
-			reverse('posts:detail', kwargs={'slug': instance.slug}))
+			new_comment.content_object.get_absolute_url())
 	
 # in urls.py --> PostDetailView.as_view() instead of post_detail
 

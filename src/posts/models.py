@@ -88,12 +88,7 @@ class Post(models.Model):
        
     @property
     def comments(self):
-        comments = Comment.objects.filter_by_instance(self)
-        for comment in comments:
-            children = Comment.objects.filter_by_instance(comment)
-            if children:
-                comment.children = children
-        return comments
+        return Comment.objects.filter_by_instance(self)
 
     @property
     def get_content_type(self):
