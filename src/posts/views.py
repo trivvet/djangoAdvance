@@ -94,7 +94,8 @@ class PostDetailView(DetailView):
 			data['object_id'] = form.cleaned_data.get("object_id")
 			data['content'] = form.cleaned_data.get("content")
 			data['user'] = request.user
-			data['parent'] = Comment.objects.get(pk=parent_id)
+			if parent_id:
+			    data['parent'] = Comment.objects.get(pk=parent_id)
 			new_comment = Comment(**data)
 			new_comment.save()
 		return HttpResponseRedirect(

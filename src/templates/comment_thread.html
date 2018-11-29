@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<h2>{{ object.content }}</h2>
+<h3>{{ object.user }} <cite title="Source Title">{{ object.timestamp|timesince }} ago</cite></h3>
+
+{% for comment in children %}
+<blockquote>
+    <p>{{ comment.content }}</p>
+    <footer>{{ comment.user }} <cite title="Source Title">{{ comment.timestamp|timesince }} ago</cite> | {% if comment.children %}{{ comment.children.count }} Comment{% if comment.children.count > 1 %}s{% endif %} | {% endif %}<a href="#" class="show-replies">Reply</a>{% if comment.children %} | <a href="{% url 'comments:thread' comment.id %}">Thread</a>{% endif %}</footer>
+
+    <div class="comment-reply">
+    {% if comment.children %}
+        {% for item in comment.children %} 
+        <hr/>
+        <blockquote>
+            <p>{{ item.content }}</p>
+            <footer>{{ item.user }} <cite title="Source Title">{{ item.timestamp|timesince }} ago:</cite></footer>
+        </blockquote>
+        {% endfor %}
+        {% endif %}
+        <form class="form-inline" action="" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form|crispy }}
+                <input type="hidden" name="parent_id" value="{{ comment.id }}">
+            </div>
+            <button class="btn btn-default" type="submit">Reply</button>
+        </form>
+    </div>
+</blockquote>
+
+{% endfor %}
+{% endblock content %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function(){
+        $('.show-replies').click(function(event){
+            event.preventDefault();
+            $(this).blur();
+            $(this).parent().next().fadeToggle();
+        });
+
+
+    })
+</script>
+
+{% endblock extra_js %}

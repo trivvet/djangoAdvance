@@ -62,31 +62,31 @@ Linkedin
         </form>
         <hr/>
         {% for comment in object.comments %}
-        {% if comment.is_parent %}
         <blockquote>
             <p>{{ comment.content }}</p>
-            <footer>{{ comment.user }} <cite title="Source Title">{{ comment.timestamp|timesince }} ago</cite></footer>
-            <form class="form-inline" action="" method="POST">
-                {% csrf_token %}
-                <div class="form-group">
-                    {{ form|crispy }}
-                    <input type="hidden" name="parent_id" value="{{ comment.id }}">
-                </div>
-                <button class="btn btn-default" type="submit">Reply</button>
-            </form>
-
-            {% if comment.children %}
-                {% for item in comment.children %}  
-                <hr/>
-                <blockquote>
-                    <p>{{ item.content }}</p>
-                    <footer>{{ item.user }} <cite title="Source Title">{{ item.timestamp|timesince }} ago:</cite></footer>
-                </blockquote>
-                {% endfor %}
-            {% endif %}
+            <footer>{{ comment.user }} <cite title="Source Title">{{ comment.timestamp|timesince }} ago</cite> | {% if comment.children %}{{ comment.children.count }} Comment{% if comment.children.count > 1 %}s{% endif %} | {% endif %}<a href="#" class="show-replies">Reply</a>{% if comment.children %} | <a href="{% url 'comments:thread' comment.id %}">Thread</a>{% endif %}</footer>
+            
+            <div class="comment-reply">
+                {% if comment.children %}
+                    {% for item in comment.children %} 
+                    <hr/>
+                    <blockquote>
+                        <p>{{ item.content }}</p>
+                        <footer>{{ item.user }} <cite title="Source Title">{{ item.timestamp|timesince }} ago:</cite></footer>
+                    </blockquote>
+                    {% endfor %}
+                {% endif %}
+                <form class="form-inline" action="" method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        {{ form|crispy }}
+                        <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                    </div>
+                    <button class="btn btn-default" type="submit">Reply</button>
+                </form>
+            </div>
         </blockquote>
         <hr/>
-        {% endif %}
         {% endfor %}
     </div>
 
@@ -96,3 +96,18 @@ Linkedin
 
 
 {% endblock content %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function(){
+        $('.show-replies').click(function(event){
+            event.preventDefault();
+            $(this).blur();
+            $(this).parent().next().fadeToggle();
+        });
+
+
+    })
+</script>
+
+{% endblock extra_js %}
