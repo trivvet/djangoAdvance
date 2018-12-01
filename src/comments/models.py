@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.core.urlresolvers import reverse
 from django.db import models
 
 # Create your models here.
@@ -47,6 +48,9 @@ class Comment(models.Model):
         return str(u"Comment on {} at {}".format(self.content_object,
             self.timestamp))
 
+    def get_absolute_url(self):
+        return reverse("comments:thread", kwargs={'cid': self.id})
+
     def children(self):
         return Comment.objects.filter(parent=self)
 
@@ -55,3 +59,8 @@ class Comment(models.Model):
         if self.parent is not None:
             return False
         return True
+
+    @property
+    def get_content_type(self):
+        content_type = ContentType.objects.get_for_model(self.__class__)
+        return content_type

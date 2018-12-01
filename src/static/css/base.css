@@ -2,6 +2,10 @@ h1 {
     color: #777777;
 }
 
+.messages {
+    list-style-type: none;
+}
+
 .comment-reply {
     display: none;
 }

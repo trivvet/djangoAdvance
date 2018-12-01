@@ -26,6 +26,8 @@ from django.utils import timezone
 
 from .forms import PostForm
 from .models import Post
+from .utils import get_read_time
+
 from comments.forms import CommentForm
 from comments.models import Comment
 
@@ -71,12 +73,12 @@ class PostDetailView(DetailView):
 		context['share_string'] = quote_plus(
 			instance.content.encode('utf8')
 			)
+		print get_read_time(instance.get_markdown())
 		initial_data = {
 		    "content_type": instance.get_content_type,
 		    "object_id": instance.id
 		}
 		form = CommentForm(
-			self.request.POST or None, 
 			initial=initial_data
 			)
 		context['form'] = form
@@ -89,7 +91,6 @@ class PostDetailView(DetailView):
 			data = {}
 			c_type = form.cleaned_data.get("content_type")
 			parent_id = request.POST.get('parent_id')
-			print parent_id
 			data['content_type'] = ContentType.objects.get(model=c_type)
 			data['object_id'] = form.cleaned_data.get("object_id")
 			data['content'] = form.cleaned_data.get("content")
@@ -147,7 +148,6 @@ def post_list(request):
 	except EmptyPage:
 		# If page is out of range (e.g. 9999), deliver last page of results.
 		queryset = paginator.page(paginator.num_pages)
-
 
 	context = {
 		"object_list": queryset, 

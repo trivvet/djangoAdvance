@@ -83,6 +83,16 @@ class Post(models.Model):
         markdown_string = markdown(self.content)
         return mark_safe(markdown_string)
 
+    def read_time(self):
+        words_amount = len(self.content.split())
+        if words_amount < 228:
+            time = "less than minute"
+        elif words_amount < 456:
+            time = "one minute"
+        else:
+            time = str(words_amount / 228) + " minutes"
+        return time
+
     class Meta:
         ordering = ["-timestamp", "-updated"]
        

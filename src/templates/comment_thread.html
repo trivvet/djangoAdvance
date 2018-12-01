@@ -3,11 +3,20 @@
 
 {% block content %}
 
-<h2>{{ object.content }}</h2>
-<h3>{{ object.user }} <cite title="Source Title">{{ object.timestamp|timesince }} ago</cite></h3>
+<div class='row'>
+<div class='col-sm-6 col-sm-offset-3'>
+
+<h3>
+    <a href="{% if object.parent_id %}{% url 'comments:thread' object.parent_id %}{% else %}{% url 'posts:detail' object.object_id %}{% endif %}"><== Go back</a>
+</h3>
+
+<h3>{{ object.content }}</h3>
+<h4>{{ object.user }} <cite title="Source Title">{{ object.timestamp|timesince }} ago {% if object.children %} | {{ object.children.count }} Comment{% if object.children.count > 1 %}s{% endif %}{% endif %}</cite></h4>
+<hr/>
 
 {% for comment in children %}
-<blockquote>
+<blockquote>   
+    
     <p>{{ comment.content }}</p>
     <footer>{{ comment.user }} <cite title="Source Title">{{ comment.timestamp|timesince }} ago</cite> | {% if comment.children %}{{ comment.children.count }} Comment{% if comment.children.count > 1 %}s{% endif %} | {% endif %}<a href="#" class="show-replies">Reply</a>{% if comment.children %} | <a href="{% url 'comments:thread' comment.id %}">Thread</a>{% endif %}</footer>
 
@@ -20,7 +29,7 @@
             <footer>{{ item.user }} <cite title="Source Title">{{ item.timestamp|timesince }} ago:</cite></footer>
         </blockquote>
         {% endfor %}
-        {% endif %}
+    {% endif %}
         <form class="form-inline" action="" method="POST">
             {% csrf_token %}
             <div class="form-group">
@@ -33,6 +42,20 @@
 </blockquote>
 
 {% endfor %}
+
+<div>
+    <form class="form-inline" action="" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form|crispy }}
+            <input type="hidden" name="parent_id" value="{{ object.id }}">
+        </div>
+        <button class="btn btn-default" type="submit">Reply</button>
+    </form>
+</div>
+
+</div>
+</div>
 {% endblock content %}
 
 {% block extra_js %}
