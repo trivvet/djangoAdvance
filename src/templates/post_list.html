@@ -24,7 +24,9 @@
         <h3><a href='{{ obj.get_absolute_url }}'>{{ obj.title }}</a> <small>{{ obj.publish }}</small></h3>
         {% if obj.user.get_full_name %}<p>Author: {{ obj.user.get_full_name }}</p>{% endif %}
         {{ obj.get_markdown|truncatewords_html:50 }}
-        <p><a href="{{ obj.get_absolute_url }}" class="btn btn-primary" role="button">View</a> Read for {{ obj.read_time }}</p>
+        {% with obj.time_read as minutes %}
+        <p><a href="{{ obj.get_absolute_url }}" class="btn btn-primary" role="button">View</a> Read for {% if minutes <= 1 %}less then minute {% elif minutes <= 10 %}less then 10 minutes{% else %}{{ minutes }} minutes{% endif %}</p>
+        {% endwith %}
       </div>
     </div>
   </div>

@@ -73,7 +73,6 @@ class PostDetailView(DetailView):
 		context['share_string'] = quote_plus(
 			instance.content.encode('utf8')
 			)
-		print get_read_time(instance.get_markdown())
 		initial_data = {
 		    "content_type": instance.get_content_type,
 		    "object_id": instance.id
@@ -148,7 +147,7 @@ def post_list(request):
 	except EmptyPage:
 		# If page is out of range (e.g. 9999), deliver last page of results.
 		queryset = paginator.page(paginator.num_pages)
-
+    
 	context = {
 		"object_list": queryset, 
 		"title": "List",

@@ -1,4 +1,5 @@
 import datetime
+import math
 import re
 
 from django.utils.html import strip_tags
@@ -43,15 +44,8 @@ def get_read_time(html_string):
 
     words_amount = count_words(html_string)
 
-    read_time_min = words_amount / 228.0
-    read_time_sec = read_time_min * 60
-    read_time = str(datetime.timedelta(seconds=read_time_sec))
-    
-    if words_amount < 228:
-        time = "less than minute"
-    elif words_amount < 456:
-        time = "one minute"
-    else:
-        time = str(words_amount / 228) + " minutes"
-    print read_time
-    return time
+    read_time_min = math.ceil(words_amount / 228.0)
+    # read_time_sec = read_time_min * 60
+    # read_time = str(datetime.timedelta(seconds=read_time_sec))
+    # read_time = str(datetime.timedelta(minutes=read_time_min))
+    return int(read_time_min)

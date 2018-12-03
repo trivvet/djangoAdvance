@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% if request.user.is_authenticated %}
+<h1><a href="{% url 'posts:list' %}">Go to the posts</a></h1>
+{% else %}
+<h1>You aren't authenticated <a href="{% url 'admin:index' %}">Go to the admin site</a></h1> 
+{% endif %}
+{% endblock content %}

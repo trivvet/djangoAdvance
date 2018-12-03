@@ -14,6 +14,7 @@ from django.utils.text import slugify
 from markdown_deux import markdown
 
 from comments.models import Comment
+from .utils import get_read_time
 
 #Post.objects.all().published()
 #Post.objects.create(user=user, title="Some time")
@@ -66,6 +67,7 @@ class Post(models.Model):
     draft = models.BooleanField(default=False)
     publish = models.DateField(auto_now=False, auto_now_add=False)
     updated = models.DateTimeField(auto_now=True, auto_now_add=False)
+    time_read = models.IntegerField(default=0)
     timestamp = models.DateTimeField(auto_now=False, auto_now_add=True)
 
     objects = PostManager()
@@ -82,16 +84,6 @@ class Post(models.Model):
     def get_markdown(self):
         markdown_string = markdown(self.content)
         return mark_safe(markdown_string)
-
-    def read_time(self):
-        words_amount = len(self.content.split())
-        if words_amount < 228:
-            time = "less than minute"
-        elif words_amount < 456:
-            time = "one minute"
-        else:
-            time = str(words_amount / 228) + " minutes"
-        return time
 
     class Meta:
         ordering = ["-timestamp", "-updated"]
@@ -126,6 +118,9 @@ def pre_save_post_receiver(sender, instance, *args, **kwargs):
     if not instance.slug:
         # instance.slug = create_slug(instance)
         instance.slug = unique_slug_generator(instance)
+
+    if instance.content:
+        instance.time_read = get_read_time(instance.get_markdown())
 
 
 
