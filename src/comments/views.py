@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.views.generic.edit import DeleteView
 
 from .models import Comment
 from .forms import CommentForm
@@ -45,3 +46,20 @@ def comment_thread(request, cid):
     }
 
     return render(request, "comment_thread.html", context)
+
+class CommentDelete(DeleteView):
+    model = Comment
+    template_name = 'comment_confirm_delete.html'
+
+    def get_success_url(self):
+        if self.object.parent:
+            return self.object.parent.get_absolute_url()
+        else:
+            return self.object.content_object.get_absolute_url()
+
+    def delete(self, request, *args, **kwargs):
+        comment = self.get_object()
+        success_message = "{} was deleted successfully.".format(
+            comment)
+        messages.success(self.request, success_message)
+        return super(CommentDelete, self).delete(request, *args, **kwargs)

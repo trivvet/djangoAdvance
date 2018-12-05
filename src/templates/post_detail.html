@@ -64,7 +64,7 @@ Linkedin
         {% for comment in object.comments %}
         <blockquote>
             <p>{{ comment.content }}</p>
-            <footer>{{ comment.user }} <cite title="Source Title">{{ comment.timestamp|timesince }} ago</cite> | {% if comment.children %}{{ comment.children.count }} Comment{% if comment.children.count > 1 %}s{% endif %} | {% endif %}<a href="#" class="show-replies">Reply</a>{% if comment.children %} | <a href="{% url 'comments:thread' comment.id %}">Thread</a>{% endif %}</footer>
+            <footer>{{ comment.user }} <cite title="Source Title">{{ comment.timestamp|timesince }} ago</cite> | {% if comment.children %}{{ comment.children.count }} Comment{% if comment.children.count > 1 %}s{% endif %} | {% endif %}<a href="#" class="show-replies">Reply</a>{% if comment.children %} | <a href="{% url 'comments:thread' comment.id %}">Thread</a>{% else %} | <a href="{% url 'comments:delete' comment.id %}">Delete</a>{% endif %}</footer>
             
             <div class="comment-reply">
                 {% if comment.children %}
