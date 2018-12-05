@@ -18,7 +18,7 @@
 <blockquote>   
     
     <p>{{ comment.content }}</p>
-    <footer>{{ comment.user }} <cite title="Source Title">{{ comment.timestamp|timesince }} ago</cite> | {% if comment.children %}{{ comment.children.count }} Comment{% if comment.children.count > 1 %}s{% endif %} | {% endif %}<a href="#" class="show-replies">Reply</a>{% if comment.children %} | <a href="{% url 'comments:thread' comment.id %}">Thread</a>{% else %} | <a href="{% url 'comments:delete' comment.id %}">Delete</a>{% endif %}</footer>
+    <footer>{{ comment.user }} <cite title="Source Title">{{ comment.timestamp|timesince }} ago</cite> {% if comment.children %}{{ comment.children.count }} Comment{% if comment.children.count > 1 %}s{% endif %} | {% endif %}{% if request.is_authenticated %} | <a href="#" class="show-replies">Reply</a>{% endif %}{% if comment.children %} | <a href="{% url 'comments:thread' comment.id %}">Thread</a>{% elif request.user == comment.user %} | <a href="{% url 'comments:delete' comment.id %}">Delete</a>{% endif %}</footer>
 
     <div class="comment-reply">
     {% if comment.children %}
@@ -30,6 +30,7 @@
         </blockquote>
         {% endfor %}
     {% endif %}
+        {% if request.is_authentication %}
         <form class="form-inline" action="" method="POST">
             {% csrf_token %}
             <div class="form-group">
@@ -38,11 +39,12 @@
             </div>
             <button class="btn btn-default" type="submit">Reply</button>
         </form>
+        {% endif %}
     </div>
 </blockquote>
 
 {% endfor %}
-
+{% if request.is_authenticated %}
 <div>
     <form class="form-inline" action="" method="POST">
         {% csrf_token %}
@@ -53,6 +55,7 @@
         <button class="btn btn-default" type="submit">Reply</button>
     </form>
 </div>
+{% endif %}
 
 </div>
 </div>

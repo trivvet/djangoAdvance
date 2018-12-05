@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import render
 from django.views.generic.edit import DeleteView
 
@@ -13,7 +13,10 @@ from .forms import CommentForm
 # Create your views here.
 
 def comment_thread(request, cid):
-    comment = Comment.objects.get(pk=cid)
+    try:
+        comment = Comment.objects.get(pk=cid)
+    except:
+        raise Http404
     children = comment.children()
     initial_data = {
         "content_type": comment.get_content_type,
@@ -51,6 +54,20 @@ class CommentDelete(DeleteView):
     model = Comment
     template_name = 'comment_confirm_delete.html'
 
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        if self.object.user != request.user:
+            # messages.error(request, 
+            #     "You don't have permissions to see that!")
+            # raise Http404
+            response = HttpResponse("You don't have permissions to see that!")
+            response.status_code = 403
+            return response
+        else:
+            return super(CommentDelete, self).get(
+                request, *args, **kwargs)
+
     def get_success_url(self):
         if self.object.parent:
             return self.object.parent.get_absolute_url()
@@ -62,4 +79,6 @@ class CommentDelete(DeleteView):
         success_message = "{} was deleted successfully.".format(
             comment)
         messages.success(self.request, success_message)
-        return super(CommentDelete, self).delete(request, *args, **kwargs)
+        return super(CommentDelete, self).delete(
+            request, *args, **kwargs)
+
