@@ -27,6 +27,8 @@ urlpatterns = [
     url(r'^posts/', include("posts.urls", namespace='posts')),
     url(r'^comments/', include("comments.urls", 
         namespace="comments")),
+    url(r'^accounts/', include("accounts.urls",
+        namespace="accounts")),
     #url(r'^posts/$', "<appname>.views.<function_name>"),
 ]
 
