@@ -52,11 +52,47 @@ class UserLoginForm(forms.Form):
 
 
 class UserRegisterForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(UserRegisterForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(self)
+
+        self.helper.template_pack = 'bootstrap3'
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-8'
+        self.helper
+
+        self.helper.layout = Layout(
+            'username',
+            'email',
+            'email2',
+            'password',
+            Submit('submit', 'Register'),
+        )
+    
+    email = forms.EmailField(label='Email')
+    email2 = forms.EmailField(label='Confirm Email')
+    password = forms.CharField(widget=forms.PasswordInput)
+
     class Meta:
         model = User
+        fields = [
+            'username',
+            'email',
+            'email2',
+            'password'
+        ]
+
+    def clean_email2(self):
+        email = self.cleaned_data.get("email")
+        email2 = self.cleaned_data.get("email2")
         
-    username = forms.CharField()
-    password = forms.CharField(widget=forms.PasswordInput)
+        if email != email2:
+            raise forms.ValidationError(
+                "Both emails must be the same")
+        
+        return email2
 
 
 

@@ -12,7 +12,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .forms import UserLoginForm
+from .forms import UserLoginForm, UserRegisterForm
 
 # Create your views here.
 
@@ -35,7 +35,16 @@ def login_view(request):
     return render(request, "form.html", context)
 
 def register_view(request):
-    return render(request, "form.html", {})
+    form = UserRegisterForm(request.POST or None)
+    title = "Register Form"
+    if form.is_valid():
+        messages.success(request, "User is successfully created")
+        return HttpResponseRedirect(reverse("accounts:login"))
+    context = {
+        'form': form,
+        'title': title
+    }
+    return render(request, "form.html", context)
 
 def logout_view(request):
     logout(request)

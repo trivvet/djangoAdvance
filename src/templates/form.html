@@ -10,5 +10,9 @@
     <h1>{{ title }}</h1>
 
     {% crispy form %}
+    {% url 'accounts:login' as user_login %}
+    {% if request.path == user_login %}
+    <a href="{% url 'accounts:register' %}">Registration</a>
+    {% endif %}
 </div>
 {% endblock content %}
