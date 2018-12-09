@@ -30,11 +30,15 @@ fjs.parentNode.insertBefore(js, fjs);
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class='container'>
         <div class="navbar-header">
-            <a class="navbar-brand" href="#">{{ request.user.username }}</a>
+            <a class="navbar-brand" href="{% url 'posts:list' %}">Posts Lists</a>
          </div>
          
          {% if request.user.is_authenticated %}
          <p class="navbar-text navbar-right"><a href="{% url 'accounts:logout' %}" class="navbar-link">Log out</a></p>
+         <p class="navbar-text navbar-right">{{ request.user.username}}</p>
+         {% else %}
+         <p class="navbar-text navbar-right"><a href="{% url 'accounts:register' %}" class="navbar-link">Register</a></p>
+         <p class="navbar-text navbar-right"><a href="{% url 'accounts:login' %}" class="navbar-link">Login</a></p>
          {% endif %}
     </div>
 </nav>

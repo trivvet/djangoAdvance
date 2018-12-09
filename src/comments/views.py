@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from django.shortcuts import render
@@ -12,6 +13,7 @@ from .forms import CommentForm
 
 # Create your views here.
 
+@login_required(login_url='/accounts/login/')
 def comment_thread(request, cid):
     try:
         comment = Comment.objects.get(pk=cid)
@@ -26,7 +28,7 @@ def comment_thread(request, cid):
         request.POST or None,
         initial=initial_data
         )
-    if request.method == "POST" and form.is_valid():
+    if form.is_valid():
         data = {}
         c_type = form.cleaned_data.get("content_type")
         parent_id = request.POST.get('parent_id')

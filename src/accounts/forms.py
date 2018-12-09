@@ -84,6 +84,15 @@ class UserRegisterForm(forms.ModelForm):
             'password'
         ]
 
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        users_same_email = User.objects.filter(email=email)
+        if users_same_email.count():
+            raise forms.ValidationError(
+                "A user with the same email already exists")
+
+        return email
+
     def clean_email2(self):
         email = self.cleaned_data.get("email")
         email2 = self.cleaned_data.get("email2")

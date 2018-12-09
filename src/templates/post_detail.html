@@ -53,6 +53,7 @@ Linkedin
     
     <div>
         <p class="lead">Comments:</p>
+        {% if request.user.is_authenticated %}
         <form class="form-inline" action="" method="POST">
             {% csrf_token %}
             <div class="form-group">
@@ -60,6 +61,9 @@ Linkedin
             </div>
             <button class="btn btn-default" type="submit">Comment</button>
         </form>
+        {% else %}
+        <p>You must <a href="{% url 'accounts:login' %}">login</a> to comment</p>
+        {% endif %}
         <hr/>
         {% for comment in object.comments %}
         <blockquote>
@@ -76,6 +80,7 @@ Linkedin
                     </blockquote>
                     {% endfor %}
                 {% endif %}
+                {% if request.user.is_authenticated %}
                 <form class="form-inline" action="" method="POST">
                     {% csrf_token %}
                     <div class="form-group">
@@ -84,6 +89,9 @@ Linkedin
                     </div>
                     <button class="btn btn-default" type="submit">Reply</button>
                 </form>
+                {% else %}
+                    <p>You must <a href="{% url 'accounts:login' %}">login</a> to comment</p>
+                {% endif %}
             </div>
         </blockquote>
         <hr/>

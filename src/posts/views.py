@@ -86,7 +86,7 @@ class PostDetailView(DetailView):
 	def post(self, request, *args, **kwargs):
 		instance = self.get_object()
 		form = CommentForm(self.request.POST or None)
-		if form.is_valid():
+		if form.is_valid() and request.user.is_authenticated():
 			data = {}
 			c_type = form.cleaned_data.get("content_type")
 			parent_id = request.POST.get('parent_id')
@@ -98,8 +98,10 @@ class PostDetailView(DetailView):
 			    data['parent'] = Comment.objects.get(pk=parent_id)
 			new_comment = Comment(**data)
 			new_comment.save()
-		return HttpResponseRedirect(
-			new_comment.content_object.get_absolute_url())
+			return HttpResponseRedirect(
+		    	new_comment.content_object.get_absolute_url())
+		messages.error(request, "Something went wrong")
+		return HttpResponseRedirect(instance.get_absolute_url())
 	
 # in urls.py --> PostDetailView.as_view() instead of post_detail
 
